@@ -1,4 +1,4 @@
-const cases = require('./2_1');
+const cases = require('./2/2_1');
 
 const n = 8;
 const r = 3;
