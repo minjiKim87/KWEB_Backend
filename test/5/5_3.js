@@ -7,13 +7,12 @@ app.get('/fare', async (req, res) => {
     try {
         const { uid } = req.query;
         const sql = `
-            SELECT users.name,
+            SELECT users.name, 
             SUM(ROUND(types.fare_rate * trains.distance / 1000, -2)) AS totalFare
             FROM tickets
-            INNER JOIN users ON tickets.user_id = users.id
+            INNER JOIN users ON tickets.user_id = users.id AND users.id = ?
             INNER JOIN trains ON tickets.train_id = trains.id
             INNER JOIN types ON trains.type_id = types.id
-            WHERE users.id = ?
         `;
         const results = await runQuery(sql, [uid]);
         if (results.length > 0) {
@@ -34,10 +33,8 @@ app.get('/train/status', async (req, res) => {
         const sql = `
             SELECT COUNT(*) AS occupied, types.max_seats AS maximum
             FROM tickets
-            INNER JOIN trains ON trains.id = tickets.train_id
+            INNER JOIN trains ON trains.id = tickets.train_id AND trains.id = ?
             INNER JOIN types ON types.id = trains.type_id
-            WHERE trains.id = ?
-            GROUP BY types.max_seats
         `;
         const results = await runQuery(sql, [tid]);
         if (results.length > 0) {
